@@ -4,13 +4,13 @@ import PySimpleGUI as pg
 import re
 
 
-def LinksList_IsEmpty(linksList):
+def LinksList_IsEmpty(linksList, window):
 
     # Valida se a primeira linha está vazia
     if linksList[0] == '' :
         pg.Popup("Erro: Verifique os espaços em branco antes de continuar.\n", title="Erro")
-        gui.init_window()["-STATUS-"].update("Aguardando usuário...",text_color="black")
-        gui.enableActionButtons()
+        window["-STATUS-"].update("Aguardando usuário...",text_color="black")
+        gui.enableActionButtons(window)
         return True
 
 
@@ -70,7 +70,7 @@ def Get_URLString_Regex(link, window):
 
         return newlink
 
-def Get_URLRequest_SimpleResult(link):
+def Get_URLRequest_Code(link):
 
     
     #Verificar status do GET no link
@@ -82,3 +82,17 @@ def Get_URLRequest_SimpleResult(link):
 
     #Retornar apenas o código (como string?! então tá...)
     return requestURLCode
+
+def Get_ResultToString(code):
+    result = ""
+    
+    match code:
+        case "200":
+            result = "OK"
+        case "403":
+            result = "ERRO"
+        case _:
+            result = f"VERIFICAR - {code}"
+
+
+    return result

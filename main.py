@@ -53,19 +53,20 @@ while True:
       gui.disableActionButtons(window)
       window["-STATUS-"].update("Inicializando verificação...",text_color="navy")
 
-      # Inicializar variáveis importantes
+      # Armazenar se o dataframe já foi gerado (para permitir exportação) + inicializando dataframe
       requestURLResult = ""
-      lineNumber = 0              #contagem de linhas
-      generatedDataFrame = False  #armazenar se o dataframe já foi gerado (para permitir exportação)
-      df2 = pd.DataFrame()        #inicializar o dataframe //TODO: VERIFICAR NECESSIDADE
+      lineNumber = 0              
+      generatedDataFrame = False  
+      df2 = pd.DataFrame()        #TODO: VERIFICAR NECESSIDADE
 
       try:
 
+          # Armazena em uma list todas as linhas inseridas, separando por quebra de linhas
           linksList = str(values["-LINES-"]).split(f"\n")
           
           # Valida se a primeira linha está vazia e alerta ao usuário sobre espaços em branco
           # Não inicia a validação até que a primeira linha tenha conteúdo
-          if validation.LinksList_IsEmpty(linksList):
+          if validation.LinksList_IsEmpty(linksList,window):
             continue
           
 
@@ -76,7 +77,9 @@ while True:
           
           for l in linksList:
 
+              # 
               try:
+
                 # Função para validar link atual usando regex, e ajustar a depender da condição
                 # Depois, armazenar link validado na variável "verifiedURL"
                 # Passa o link e a janela atual como parâmetros
@@ -85,19 +88,11 @@ while True:
                 # Função para verificar o código resultando da GET request, e retornar uma string com o resultado
                 
                 # Armazenar resultado na variável "requestURLCode"
-                requestURLCode = validation.Get_URLRequest_SimpleResult(verifiedURL)
+                requestURLCode = validation.Get_URLRequest_Code(verifiedURL)
 
 
                 # Criar "simpleResult" para armazenar um resultado simples e de fácil entendimento ao usuário
-                # 200 = OK | 403 = ERRO
-                # Se não for nenhum dos dois, é interessante que o usuário verifique.
-                # TODO: Criar condição para outros códigos de API REST (usar função específica pra isso)
-                if requestURLCode == "200":
-                  simpleResult = "OK"
-                elif requestURLCode == "403":
-                  simpleResult = "ERRO"
-                else:
-                  simpleResult = f"VERIFICAR - {requestURLCode}"
+                simpleResult = validation.Get_ResultToString(requestURLCode)
 
 
               # EXCEPTION DE URL INVÁLIDO 1 - servem de último recurso caso alguma validação de regex falhe
@@ -122,8 +117,7 @@ while True:
                   else:
                     pass
               
-              # EXCEPTION DE CONEXÃO - caso alguma falha de conexão ocorra durante a validação de algum dos links.
-              # Caso essa exception ocorra, a validação é interrompida.
+              # EXCEPTION DE CONEXÃO - interrompe a validação.
               except requests.exceptions.ConnectionError:
                   window["-STATUS-"].update("Erro de conexão. Verifique sua conexão com a internet e tente novamente.",text_color="red")
                   pg.Popup(f"Erro de conexão. Abortando validação...")
@@ -132,6 +126,7 @@ while True:
               
               # Incrementando número da linha atual para exibir corretamente no output
               lineNumber += 1
+
 
               # Atualizando caixa de resultado (output)
               window["-RESULT-"].print(f"Linha {lineNumber}: {verifiedURL} - {simpleResult}")
@@ -172,6 +167,9 @@ while True:
           raise(err)
           
     
+
+
+
     elif event == "COPIAR RESULTADO":
         # Checar se a variável que armazena os resultados gerados possui apenas as colunas iniciais
         # Não copiar para a área de transferência e avisar ao usuário para realizar uma validação antes.
