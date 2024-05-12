@@ -49,7 +49,9 @@ while True:
 
       # Armazenar se o dataframe já foi gerado (para permitir exportação)
       lineNumber = 0              
-      isDataFrameReady = False 
+      isDataFrameReady = False
+
+      # Reseta string que vai pra área de transferência
       clipboard_Str = "URL\tSTATUS"
       
 
