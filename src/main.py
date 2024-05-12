@@ -63,10 +63,6 @@ while True:
             continue
           
 
-          # Se a primeira linha não estiver vazia, inicializa um dataframe contendo as colunas
-          datatest = pd.DataFrame(columns=['URL', 'CÓDIGO', 'STATUS'])
-          
-          
           for l in linksList:
 
 
@@ -154,24 +150,24 @@ while True:
           pg.Popup(f"Erro: {err}\n\nPor favor, abra uma issue no GitHub do projeto contendo um print dessa tela.\n\nO programa será fechado agora.", title="Erro")
           isDataFrameReady = False
           raise(err)
-      continue
+      
           
     
     #CLIPBOARD
     elif event == "COPIAR RESULTADO":
         clipboard.copyResultToClipboard(clipboard_Str,window)
-        continue
+        
 
     #EXPORT
     elif event == "EXPORTAR":
         export.To_xlsx(df2,isDataFrameReady,window)
-        continue
+        
     
 
     #TODO: INSERIR FUNCIONALIDADE PARA CANCELAR UMA VALIDAÇÃO EM ANDAMENTO
     elif event == "CANCELAR":
         gui.enableActionButtons(window)
-        continue
+        break
 
    # DEBUG
    # EXE: pyinstaller main.py -F --noconsole --clean

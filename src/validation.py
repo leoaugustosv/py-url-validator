@@ -21,6 +21,9 @@ def get_URLString_Regex(link, window):
         #Atualizar status avisando que a verificação de URLs está em curso
         window["-STATUS-"].update(f"Verificando URLs. Aguarde...", text_color="olive")
 
+        #Desinfetando linha antes de entrar em regex
+        link = re.sub("[^a-zA-Z0-9:/ $\-_.+!*'(),]","",link)
+
 
         #===== 1ª VALIDAÇÃO COM REGEX =====
         #Regex para verificar se o link está CORRETO:
@@ -34,32 +37,25 @@ def get_URLString_Regex(link, window):
 
         #===== 2ª VALIDAÇÃO COM REGEX =====
         #Regex para ajustar um link INCORRETO, caso:
-        # 1. começa com (HTTP ou HTTPS) e "://", 
-        #|OU| 
-        # 2. se NÃO termina com ".com" (ou algo a mais além disso)
-        elif re.match(r"^(?!https?://|.*\.com.*$).*", link):
-            newlink = f"https://{link}.com"
-            print("caught in Regex 2: ",newlink)
-
-
-        #===== 3ª VALIDAÇÃO COM REGEX =====
-        #Regex para ajustar um link INCORRETO, caso:
         # 1. começa com HTTP ou HTTPS e "://" 
         #|E|
         # 2. não termina com ".com"
         elif re.match(r"^(?!https?://).*\.com.*$", link):
             newlink = f"https://{link}"
-            print("caught in Regex 3: ",newlink)
+            print("caught in Regex 2: ",newlink)
 
 
-        #===== 4ª VALIDAÇÃO COM REGEX =====
+        #===== 3ª VALIDAÇÃO COM REGEX =====
         #Regex para ajustar um link INCORRETO, caso:
         # 1. começa com HTTP ou HTTPS e depois tem "://"
         #|E|
         # 2. NÃO termina com ".com"
         elif re.match(r"^(https?://)(?:(?!\.com).)*$", link):
             newlink = f"{link}.com"
-            print("caught in Regex 4: ",newlink)
+            print("caught in Regex 3: ",newlink)
+
+        else:
+            newlink = link
 
 
         #===== VALIDAÇÃO ADICIONAL COM REPLACE =====
