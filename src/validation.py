@@ -4,7 +4,8 @@ import PySimpleGUI as pg
 import re
 
 
-def LinksList_IsEmpty(linksList, window):
+
+def firstLine_IsEmpty(linksList, window):
 
     # Valida se a primeira linha está vazia
     if linksList[0] == '' :
@@ -14,7 +15,7 @@ def LinksList_IsEmpty(linksList, window):
         return True
 
 
-def Get_URLString_Regex(link, window):
+def get_URLString_Regex(link, window):
         newlink = ""
 
         #Atualizar status avisando que a verificação de URLs está em curso
@@ -62,7 +63,7 @@ def Get_URLString_Regex(link, window):
 
 
         #===== VALIDAÇÃO ADICIONAL COM REPLACE =====
-        #Se o link estiver incorreto, vai ser transformado em uma string vazia para pular verificações de request
+        # Se o link estiver incorreto, vai ser transformado em uma string vazia para pular verificações de request
         # e informar o usuário que a linha está vazia
         if link == "https://.com":
             newlink = ""
@@ -70,7 +71,7 @@ def Get_URLString_Regex(link, window):
 
         return newlink
 
-def Get_URLRequest_Code(link):
+def get_URLRequest_Code(link):
 
     
     #Verificar status do GET no link
@@ -83,7 +84,7 @@ def Get_URLRequest_Code(link):
     #Retornar apenas o código (como string?! então tá...)
     return requestURLCode
 
-def Get_ResultToString(code):
+def get_ResultToString(code):
     result = ""
     
     match code:
