@@ -22,6 +22,7 @@ isDataFrameReady = False
 clipboard_Str = "URL\tSTATUS"
 
 
+
 # INICIAR LOOP PARA MANTER JANELA ABERTA
 while True:
     event, values = window.read() # Leitura e eventos da janela atual
@@ -48,7 +49,8 @@ while True:
 
       # Armazenar se o dataframe já foi gerado (para permitir exportação)
       lineNumber = 0              
-      isDataFrameReady = False  
+      isDataFrameReady = False 
+      clipboard_Str = "URL\tSTATUS"
       
 
       try:
@@ -62,13 +64,12 @@ while True:
           
 
           # Se a primeira linha não estiver vazia, inicializa um dataframe contendo as colunas
-          else:
-            datatest = pd.DataFrame(columns=['URL', 'CÓDIGO', 'STATUS'])
+          datatest = pd.DataFrame(columns=['URL', 'CÓDIGO', 'STATUS'])
           
           
           for l in linksList:
 
-              
+
               try:
 
                 # Validar link atual usando regex, e ajustar a depender da condição
@@ -120,19 +121,22 @@ while True:
 
               # Armazenando no dict "d" as infos validadas do link atual, checando se incorreu em exception ou não
               if simpleResult == "INVÁLIDO":
-                 d = {'URL':[l],'CÓDIGO':'null', 'STATUS':[simpleResult]}
+                 d = {'LINHA':[lineNumber],'URL':[l],'CÓDIGO':'null', 'STATUS':[simpleResult]}
 
-              elif simpleResult != "INVÁLIDO":
-                 d = {'URL':[verifiedURL],'CÓDIGO':[requestURLCode], 'STATUS':[simpleResult]}
-
-
+              else:
+                d = {'LINHA':[lineNumber],'URL':[verifiedURL],'CÓDIGO':[requestURLCode], 'STATUS':[simpleResult]}
 
               # Gerando o DataFrame usando Pandas (que poderá ser exportado mais tarde)
               df = pd.DataFrame(data=d)
               df2 = pd.concat([df,df2])
+              
               isDataFrameReady = True
               
               #-------- FIM DO FOR-EACH
+
+          # Setando index do dataframe pra coluna LINHA e ordenando
+          df2.set_index("LINHA",inplace=True)
+          df2 = df2.sort_values("LINHA")
           
 
           # Calculando tempo decorrido e atualizando status sobre sucesso da operação
@@ -150,6 +154,7 @@ while True:
           pg.Popup(f"Erro: {err}\n\nPor favor, abra uma issue no GitHub do projeto contendo um print dessa tela.\n\nO programa será fechado agora.", title="Erro")
           isDataFrameReady = False
           raise(err)
+      continue
           
     
     #CLIPBOARD
