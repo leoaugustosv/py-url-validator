@@ -1,5 +1,4 @@
 import os
-import pandas as pd
 import PySimpleGUI as pg
 import gui
 
@@ -24,7 +23,7 @@ def To_xlsx(df2,isDataFrameReady,window):
             filename.replace(".xlsx.xlsx",".xlsx")
 
 
-        
+
         print(f"SELECTED PATH: {filename}")
         df2.to_excel(filename, engine="xlsxwriter", sheet_name="ExportResults")
         window["-STATUS-"].update(f"Arquivo exportado com sucesso!\nCaminho: {filename}.",text_color="green")
