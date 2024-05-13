@@ -43,17 +43,17 @@ def init_window():
 
 
 # DESABILITAR BOTÕES DE AÇÃO
-def disableActionButtons(window):
-   window['VALIDAR'].update(disabled=True)
-   window['COPIAR RESULTADO'].update(disabled=True)
-   window['EXPORTAR'].update(disabled=True)
-   window['CANCELAR'].update(disabled=False)
+def disableActionButtons(WINDOW):
+   WINDOW['VALIDAR'].update(disabled=True)
+   WINDOW['COPIAR RESULTADO'].update(disabled=True)
+   WINDOW['EXPORTAR'].update(disabled=True)
+   WINDOW['CANCELAR'].update(disabled=False)
    return
 
 # HABILITAR BOTÕES DE AÇÃO
-def enableActionButtons(window):
-   window['VALIDAR'].update(disabled=False)
-   window['COPIAR RESULTADO'].update(disabled=False)
-   window['EXPORTAR'].update(disabled=False)
-   window['CANCELAR'].update(disabled=True)
+def enableActionButtons(WINDOW):
+   WINDOW['VALIDAR'].update(disabled=False)
+   WINDOW['COPIAR RESULTADO'].update(disabled=False)
+   WINDOW['EXPORTAR'].update(disabled=False)
+   WINDOW['CANCELAR'].update(disabled=True)
    return

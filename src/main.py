@@ -11,21 +11,21 @@ import clipboard
 import export
 
 
-# Armazena a janela atual na variável "window"
+# Armazena a janela atual na variável "WINDOW"
 # Sempre que mudanças na estrutura da janela precisarem ser feitas, passar essa variável como parâmetro
-window = gui.init_window()
+WINDOW = gui.init_window()
 
 
 # Inicializando dataframe e indicação se há um dataframe gerado + definindo colunas padrão para a área de transferência
 df2 = pd.DataFrame()
-isDataFrameReady = False
-clipboard_Str = "URL\tSTATUS"
+is_dataframe_ready = False
+clipboard_str = "URL\tSTATUS"
 
 
 
 # INICIAR LOOP PARA MANTER JANELA ABERTA
 while True:
-    event, values = window.read() # Leitura e eventos da janela atual
+    event, values = WINDOW.read() # Leitura e eventos da janela atual
 
    # FINALIZAR LOOP SE CANCELAR OU FECHAR JANELA
     if event == pg.WIN_CLOSED:
@@ -43,136 +43,140 @@ while True:
       tempoInicio = time.perf_counter()
 
       # Limpar espaço de output, desabilitar botões de ação e atualizar status do programa
-      window["-RESULT-"].update('')
-      gui.disableActionButtons(window)
-      window["-STATUS-"].update("Inicializando verificação...",text_color="navy")
+      WINDOW["-RESULT-"].update('')
+      gui.disableActionButtons(WINDOW)
+      WINDOW["-STATUS-"].update("Inicializando verificação...",text_color="navy")
 
       # Armazenar se o dataframe já foi gerado (para permitir exportação)
-      lineNumber = 0              
-      isDataFrameReady = False
+      line_number = 0              
+      is_dataframe_ready = False
 
       # Reseta string que vai pra área de transferência
-      clipboard_Str = "URL\tSTATUS"
+      clipboard_str = "URL\tSTATUS"
       
 
       try:
 
           # Armazena em uma list todas as linhas inseridas, separando por quebra de linhas
-          linksList = str(values["-LINES-"]).split(f"\n")
+          LINKS_LIST = str(values["-LINES-"]).split(f"\n")
+
+          # Atualiza tamanho de elementos para a barra de progresso
+          WINDOW["-PROGRESS-"].update(current_count=0,max=len(LINKS_LIST))
+          
           
           # Valida se a primeira linha está vazia e não inicia a validação caso verdadeiro
-          if validation.firstLine_IsEmpty(linksList,window):
+          if validation.firstLine_IsEmpty(LINKS_LIST,WINDOW):
             continue
           
 
-          for l in linksList:
+          for l in LINKS_LIST:
 
 
               try:
 
                 # Validar link atual usando regex, e ajustar a depender da condição
-                verifiedURL = validation.get_URLString_Regex(l,window)
+                verified_url = validation.get_URLString_Regex(l,WINDOW)
 
                 # Verificar o código resultante da GET request, e retornar em string
-                requestURLCode = validation.get_URLRequest_Code(verifiedURL)
+                REQUEST_URL_CODE = validation.get_URLRequest_Code(verified_url)
 
-                # Criar "simpleResult" para armazenar um resultado simples e de fácil entendimento ao usuário
-                simpleResult = validation.get_ResultToString(requestURLCode)
+                # Criar "simple_result" para armazenar um resultado simples e de fácil entendimento ao usuário
+                simple_result = validation.get_ResultToString(REQUEST_URL_CODE)
 
 
-              # EXCEPTION DE HTTP ou HTTPS faltante - TODO: VERIFICAR NECESSIDADE
-              except requests.exceptions.MissingSchema:
-                  simpleResult = "INVÁLIDO"
+              # EXCEPTION DE URL INCORRETO - caso alguma regex falhe
+              except (requests.exceptions.MissingSchema, requests.exceptions.InvalidURL):
+                  simple_result = "INVÁLIDO"
                   
-                  if verifiedURL == "":
-                   verifiedURL = "URL Vazia"
-                  else:
-                    pass
-
-              # EXCEPTION DE URL INVÁLIDO - último recurso caso alguma validação de regex falhe
-              except requests.exceptions.InvalidURL:
-                  simpleResult = "INVÁLIDO"
-                  
-                  if verifiedURL == "":
-                   verifiedURL = "URL Vazia"
+                  if verified_url == "":
+                   verified_url = "URL Vazia"
                   else:
                     pass
               
-              # EXCEPTION DE CONEXÃO - interrompe a validação.
-              except requests.exceptions.ConnectionError:
-                  window["-STATUS-"].update("Erro de conexão. Verifique sua conexão com a internet e tente novamente.",text_color="red")
-                  pg.Popup(f"Erro de conexão. Abortando validação...")
-                  continue
+              # EXCEPTIONS DE CONEXÃO
+              except requests.exceptions.ConnectionError as err:
+                  if("NameResolutionError"in str(err)):
+                    simple_result = "INVÁLIDO"
+                    continue
+                  
+                  else:
+                    WINDOW["-STATUS-"].update("Erro de conexão genérico!",text_color="red")
+                    pg.Popup(f"Erro de conexão genérico: Por favor, abra uma issue no GitHub com um print desta tela.\nLink: {l}\nErro:{str(err)}")
+                    continue
+              
               
               
               # Incrementando número da linha atual para exibir corretamente no output
-              lineNumber += 1
+              line_number += 1
 
 
               # Atualizando caixa de resultado (output)
-              window["-RESULT-"].print(f"Linha {lineNumber}: {verifiedURL} - {simpleResult}")
+              WINDOW["-RESULT-"].print(f"Linha {line_number}: {verified_url} - {simple_result}")
              
 
-              # Incrementando a cada loop as infos de validação na variável "clipboard_Str" - usada para a área de transferência
-              clipboard_Str = f"{clipboard_Str}\n{l}\t{simpleResult}"
+              # Incrementando a cada loop as infos de validação na variável "clipboard_str" - usada para a área de transferência
+              clipboard_str = f"{clipboard_str}\n{l}\t{simple_result}"
 
 
               # Armazenando no dict "d" as infos validadas do link atual, checando se incorreu em exception ou não
-              if simpleResult == "INVÁLIDO":
-                 d = {'LINHA':[lineNumber],'URL':[l],'CÓDIGO':'null', 'STATUS':[simpleResult]}
+              if simple_result == "INVÁLIDO":
+                 d = {'LINHA':[line_number],'URL':[l],'CÓDIGO':'null', 'STATUS':[simple_result]}
 
               else:
-                d = {'LINHA':[lineNumber],'URL':[verifiedURL],'CÓDIGO':[requestURLCode], 'STATUS':[simpleResult]}
+                d = {'LINHA':[line_number],'URL':[verified_url],'CÓDIGO':[REQUEST_URL_CODE], 'STATUS':[simple_result]}
 
               # Gerando o DataFrame usando Pandas (que poderá ser exportado mais tarde)
               df = pd.DataFrame(data=d)
               df2 = pd.concat([df,df2])
               
-              isDataFrameReady = True
-              
+
+              # Atualizar barra de progresso
+              WINDOW["-PROGRESS-"].update(current_count=line_number)
+
               #-------- FIM DO FOR-EACH
 
           # Setando index do dataframe pra coluna LINHA e ordenando
+          is_dataframe_ready = True
           df2.set_index("LINHA",inplace=True)
           df2 = df2.sort_values("LINHA")
           
 
           # Calculando tempo decorrido e atualizando status sobre sucesso da operação
-          tempoFinal = time.perf_counter()
-          window["-STATUS-"].update(f"Verificação finalizada!",text_color="green")
-          window["-STATUS-"].print(f"\nTempo decorrido: {tempoFinal-tempoInicio:0.2f} segundos")
+          tempo_final = time.perf_counter()
+          WINDOW["-STATUS-"].update(f"Verificação finalizada!",text_color="green")
+          WINDOW["-STATUS-"].print(f"\nTempo decorrido: {tempo_final-tempoInicio:0.2f} segundos")
 
           # Habilitando novamente ao usuário os botões de ação
-          gui.enableActionButtons(window)
+          gui.enableActionButtons(WINDOW)
       
 
       # Exception genérica - Marca que há um dataframe gerado como falso para não permitir export
       except Exception as err:
           print("1:",Exception)
           pg.Popup(f"Erro: {err}\n\nPor favor, abra uma issue no GitHub do projeto contendo um print dessa tela.\n\nO programa será fechado agora.", title="Erro")
-          isDataFrameReady = False
+          is_dataframe_ready = False
           raise(err)
       
           
     
     #CLIPBOARD
     elif event == "COPIAR RESULTADO":
-        clipboard.copyResultToClipboard(clipboard_Str,window)
+        clipboard.copyResultToClipboard(clipboard_str,WINDOW)
         
 
     #EXPORT
     elif event == "EXPORTAR":
-        export.To_xlsx(df2,isDataFrameReady,window)
+        export.To_xlsx(df2,is_dataframe_ready,WINDOW)
         
     
 
     #TODO: INSERIR FUNCIONALIDADE PARA CANCELAR UMA VALIDAÇÃO EM ANDAMENTO
     elif event == "CANCELAR":
-        gui.enableActionButtons(window)
+        gui.enableActionButtons(WINDOW)
         break
 
    # DEBUG
    # EXE: pyinstaller main.py -F --noconsole --clean
    
    
-window.close()
+WINDOW.close()
