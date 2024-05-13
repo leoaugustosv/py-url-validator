@@ -59,6 +59,10 @@ while True:
 
           # Armazena em uma list todas as linhas inseridas, separando por quebra de linhas
           LINKS_LIST = str(values["-LINES-"]).split(f"\n")
+
+          # Atualiza tamanho de elementos para a barra de progresso
+          WINDOW["-PROGRESS-"].update(current_count=0,max=len(LINKS_LIST))
+          
           
           # Valida se a primeira linha está vazia e não inicia a validação caso verdadeiro
           if validation.firstLine_IsEmpty(LINKS_LIST,WINDOW):
@@ -125,11 +129,14 @@ while True:
               df = pd.DataFrame(data=d)
               df2 = pd.concat([df,df2])
               
-              is_dataframe_ready = True
-              
+
+              # Atualizar barra de progresso
+              WINDOW["-PROGRESS-"].update(current_count=line_number)
+
               #-------- FIM DO FOR-EACH
 
           # Setando index do dataframe pra coluna LINHA e ordenando
+          is_dataframe_ready = True
           df2.set_index("LINHA",inplace=True)
           df2 = df2.sort_values("LINHA")
           

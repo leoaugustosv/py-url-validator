@@ -86,7 +86,7 @@ def get_URLRequest_Code(link):
             return "002"
         else:
             print("request:",Exception)
-            pg.Popup(f"Erro: {err}\n\nPor favor, abra uma issue no GitHub do projeto contendo um print dessa tela.\nLink:{link}\nO programa será fechado agora.", title="Erro")
+            pg.Popup(f"Erro: {err}\n\nPor favor, abra uma issue no GitHub do projeto contendo um print dessa tela.\nLink:{link}", title="Erro")
             raise(err)
         
 
@@ -109,7 +109,7 @@ def get_ResultToString(code):
         result = "ERRO"
     elif(code.startswith("5")):
         result = "ERRO DO SERVIDOR"
-        
+
     elif(code == "001"):
         result = "INEXISTENTE OU INALCANÇÁVEL"
     elif(code == "002"):
