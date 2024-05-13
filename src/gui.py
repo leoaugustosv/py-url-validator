@@ -16,7 +16,7 @@ def init_window():
 
     # OPÇÕES DE SUBMIT NA GUI
     submit_column = [
-    [pg.Button("VALIDAR"),pg.Button("CANCELAR", disabled=True),pg.Push(),pg.Button("COPIAR RESULTADO"),pg.Button("EXPORTAR")]
+    [pg.Button("VALIDAR"),pg.Button("CANCELAR", disabled=True),pg.Push(),pg.Button("COPIAR RESULTADO", disabled=True),pg.Button("EXPORTAR", disabled=True)]
     
     ]
 
