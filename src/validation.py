@@ -5,21 +5,21 @@ import re
 
 
 
-def firstLine_IsEmpty(linksList, window):
+def firstLine_IsEmpty(LINKS_LIST, WINDOW):
 
     # Valida se a primeira linha está vazia
-    if linksList[0] == '' :
+    if LINKS_LIST[0] == '' :
         pg.Popup("Erro: Verifique os espaços em branco antes de continuar.\n", title="Erro")
-        window["-STATUS-"].update("Aguardando usuário...",text_color="black")
-        gui.enableActionButtons(window)
+        WINDOW["-STATUS-"].update("Aguardando usuário...",text_color="black")
+        gui.enableActionButtons(WINDOW)
         return True
 
 
-def get_URLString_Regex(link, window):
-        newlink = ""
+def get_URLString_Regex(link, WINDOW):
+        new_link = ""
 
         #Atualizar status avisando que a verificação de URLs está em curso
-        window["-STATUS-"].update(f"Verificando URLs. Aguarde...", text_color="olive")
+        WINDOW["-STATUS-"].update(f"Verificando URLs. Aguarde...", text_color="olive")
 
         #Desinfetando linha antes de entrar em regex
         link = re.sub("[^a-zA-Z0-9:/ $\-_.+!*'(),]","",link)
@@ -32,7 +32,7 @@ def get_URLString_Regex(link, window):
         # 2. se termina com ".com" (ou algo a mais além disso)
         if re.match(r"^https?://.*\.com(?:/.*)?$", link):
             print("caught in Regex 1: ",link)
-            newlink = link
+            new_link = link
 
 
         #===== 2ª VALIDAÇÃO COM REGEX =====
@@ -41,8 +41,8 @@ def get_URLString_Regex(link, window):
         #|E|
         # 2. não termina com ".com"
         elif re.match(r"^(?!https?://).*\.com.*$", link):
-            newlink = f"https://{link}"
-            print("caught in Regex 2: ",newlink)
+            new_link = f"https://{link}"
+            print("caught in Regex 2: ",new_link)
 
 
         #===== 3ª VALIDAÇÃO COM REGEX =====
@@ -51,21 +51,21 @@ def get_URLString_Regex(link, window):
         #|E|
         # 2. NÃO termina com ".com"
         elif re.match(r"^(https?://)(?:(?!\.com).)*$", link):
-            newlink = f"{link}.com"
-            print("caught in Regex 3: ",newlink)
+            new_link = f"{link}.com"
+            print("caught in Regex 3: ",new_link)
 
         else:
-            newlink = link
+            new_link = link
 
 
         #===== VALIDAÇÃO ADICIONAL COM REPLACE =====
         # Se o link estiver incorreto, vai ser transformado em uma string vazia para pular verificações de request
         # e informar o usuário que a linha está vazia
         if link == "https://.com":
-            newlink = ""
-            print("caught in blank replace: ",newlink)
+            new_link = ""
+            print("caught in blank replace: ",new_link)
 
-        return newlink
+        return new_link
 
 def get_URLRequest_Code(link):
 
