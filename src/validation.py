@@ -22,7 +22,8 @@ def get_URLString_Regex(link, WINDOW):
         WINDOW["-STATUS-"].update(f"Verificando URLs. Aguarde...", text_color="olive")
 
         #Desinfetando linha antes de entrar em regex
-        link = re.sub("[^a-zA-Z0-9:/ $\-_.+!*'(),]","",link)
+        link = re.sub("[^a-zA-Z0-9:/ $-_.+!*'(),]","", link)
+
 
 
         #===== 1ª VALIDAÇÃO COM REGEX =====
@@ -41,7 +42,7 @@ def get_URLString_Regex(link, WINDOW):
         #|E|
         # 2. não termina com ".com"
         elif re.match(r"^(?!https?://).*\.com.*$", link):
-            new_link = f"https://{link}"
+            new_link = f"http://{link}"
             print("caught in Regex 2: ",new_link)
 
 
@@ -61,7 +62,7 @@ def get_URLString_Regex(link, WINDOW):
         #===== VALIDAÇÃO ADICIONAL COM REPLACE =====
         # Se o link estiver incorreto, vai ser transformado em uma string vazia para pular verificações de request
         # e informar o usuário que a linha está vazia
-        if link == "https://.com":
+        if link == "http://.com":
             new_link = ""
             print("caught in blank replace: ",new_link)
 
@@ -71,7 +72,24 @@ def get_URLRequest_Code(link):
 
     
     #Verificar status do GET no link
-    requestURLResult = requests.get(link)
+    try:
+        requestURLResult = requests.get(link)
+    
+    except Exception as err:
+        if("NameResolutionError" in str(err)):
+            return "001"
+        
+        elif("No scheme supplied" in str(err)):
+            return "002"
+        
+        elif("Failed to parse" in str(err)):
+            return "002"
+        else:
+            print("request:",Exception)
+            pg.Popup(f"Erro: {err}\n\nPor favor, abra uma issue no GitHub do projeto contendo um print dessa tela.\nLink:{link}\nO programa será fechado agora.", title="Erro")
+            raise(err)
+        
+
 
     #Transformar resultado em uma string com apenas o código
     requestURLCodeSplit1 = str(requestURLResult).replace("<Response [","")
@@ -82,14 +100,21 @@ def get_URLRequest_Code(link):
 
 def get_ResultToString(code):
     result = ""
-    
-    match code:
-        case "200":
-            result = "OK"
-        case "403":
-            result = "ERRO"
-        case _:
-            result = f"VERIFICAR - {code}"
 
+    if(code.startswith("2")):
+        result = "OK"
+    elif(code.startswith("3")):
+        result = "REDIRECT"
+    elif(code.startswith("4")):
+        result = "ERRO"
+    elif(code.startswith("5")):
+        result = "ERRO DO SERVIDOR"
+        
+    elif(code == "001"):
+        result = "INEXISTENTE OU INALCANÇÁVEL"
+    elif(code == "002"):
+        result = "INVÁLIDO"
+    else:
+        result = f"VERIFICAR - {code}"
 
     return result

@@ -80,17 +80,8 @@ while True:
                 simple_result = validation.get_ResultToString(REQUEST_URL_CODE)
 
 
-              # EXCEPTION DE HTTP ou HTTPS faltante - TODO: VERIFICAR NECESSIDADE
-              except requests.exceptions.MissingSchema:
-                  simple_result = "INVÁLIDO"
-                  
-                  if verified_url == "":
-                   verified_url = "URL Vazia"
-                  else:
-                    pass
-
-              # EXCEPTION DE URL INVÁLIDO - último recurso caso alguma validação de regex falhe
-              except requests.exceptions.InvalidURL:
+              # EXCEPTION DE URL INCORRETO - caso alguma regex falhe
+              except (requests.exceptions.MissingSchema, requests.exceptions.InvalidURL):
                   simple_result = "INVÁLIDO"
                   
                   if verified_url == "":
@@ -98,11 +89,17 @@ while True:
                   else:
                     pass
               
-              # EXCEPTION DE CONEXÃO - interrompe a validação.
-              except requests.exceptions.ConnectionError:
-                  WINDOW["-STATUS-"].update("Erro de conexão. Verifique sua conexão com a internet e tente novamente.",text_color="red")
-                  pg.Popup(f"Erro de conexão. Abortando validação...")
-                  continue
+              # EXCEPTIONS DE CONEXÃO
+              except requests.exceptions.ConnectionError as err:
+                  if("NameResolutionError"in str(err)):
+                    simple_result = "INVÁLIDO"
+                    continue
+                  
+                  else:
+                    WINDOW["-STATUS-"].update("Erro de conexão genérico!",text_color="red")
+                    pg.Popup(f"Erro de conexão genérico: Por favor, abra uma issue no GitHub com um print desta tela.\nLink: {l}\nErro:{str(err)}")
+                    continue
+              
               
               
               # Incrementando número da linha atual para exibir corretamente no output
