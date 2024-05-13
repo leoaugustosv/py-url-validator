@@ -11,18 +11,34 @@ Pode ser útil em ocasiões onde você possui uma lista de links e precisa verif
 
 Requests, Pandas, PySimpleGui, tkinter, pyperclip. Para mais detalhes, verifique o arquivo **requirements.txt**.
 
-## Como abrir o projeto em sua máquina
+## Como criar e ativar um virtual environment?
+
+Criar e ativar um [virtual environment](https://docs.python.org/3/library/venv.html) é essencial para instalar as bibliotecas necessárias apenas em seu projeto Python.
 
 1. Clone o projeto para a sua máquina no diretório de preferência.
-2. Abra o CMD e vá até o caminho em que o repositório está clonado.
-3. Certifique-se de ter criado e ativado um [virtual environment](https://docs.python.org/3/library/venv.html) antes.
-4. Execute o comando abaixo:
+2. Abra o CMD e navegue até a pasta em que o repositório está clonado.
+3. Crie um virtual environment com o seguinte comando:
 
 ```
-pip install -r /path/to/requirements.txt
+python -m venv env
 ```
 
-5. Abra o arquivo main.py usando sua IDE preferida.
+4. Ainda no CMD, rode os seguintes comandos para ir até a pasta Scripts (env/Scripts) e ativar o virtual environment:
+
+```
+cd env/Scripts/
+activate.bat
+```
+
+## Como instalar as bibliotecas necessárias (requirements.txt) no virtual environment
+
+1. Abra o CMD e vá até o caminho em que o repositório está clonado.
+2. Certifique-se de ter criado e ativado um virtual environment antes (ver passos acima).
+3. Execute o comando abaixo:
+
+```
+pip install -r requirements.txt
+```
 
 ## Como transformar o projeto em um arquivo .exe único
 
