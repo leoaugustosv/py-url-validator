@@ -73,7 +73,7 @@ def get_URLRequest_Code(link):
     
     #Verificar status do GET no link
     try:
-        requestURLResult = requests.get(link)
+        requestURLResult = requests.head(link)
     
     except Exception as err:
         if("NameResolutionError" in str(err)):
