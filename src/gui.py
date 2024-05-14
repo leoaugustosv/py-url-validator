@@ -38,7 +38,7 @@ def init_window():
     ]
 
     # RETORNA CONSTRUÇÃO DA JANELA
-    return pg.Window("Validador de Links 1.1.1 - Por leoaugustosv", layout)
+    return pg.Window("Validador de Links 1.1.3 - Por leoaugustosv", layout)
 
 
 
