@@ -44,11 +44,12 @@ while True:
 
       # Limpar espaço de output, desabilitar botões de ação e atualizar status do programa
       WINDOW["-RESULT-"].update('')
-      gui.disableActionButtons(WINDOW)
+      gui.disable_action_buttons(WINDOW)
       WINDOW["-STATUS-"].update("Inicializando verificação...",text_color="navy")
 
       # Armazenar se o dataframe já foi gerado (para permitir exportação)
-      line_number = 0              
+      line_number = 0
+      count_ok = count_error = count_invalid = count_redirect = count_verify = 0
       is_dataframe_ready = False
 
       # Reseta string que vai pra área de transferência
@@ -81,7 +82,7 @@ while True:
                 REQUEST_URL_CODE = validation.get_URLRequest_Code(verified_url)
 
                 # Criar "simple_result" para armazenar um resultado simples e de fácil entendimento ao usuário
-                simple_result = validation.get_ResultToString(REQUEST_URL_CODE)
+                simple_result = validation.get_result_ToString(REQUEST_URL_CODE)
 
 
               # EXCEPTION DE URL INCORRETO - caso alguma regex falhe
@@ -119,11 +120,20 @@ while True:
 
 
               # Armazenando no dict "d" as infos validadas do link atual, checando se incorreu em exception ou não
-              if simple_result == "INVÁLIDO":
+              if simple_result == "INVÁLIDO" or simple_result == "INEXISTENTE OU INALCANÇÁVEL":
                  d = {'LINHA':[line_number],'URL':[l],'CÓDIGO':'null', 'STATUS':[simple_result]}
-
+                 count_invalid += 1
+                
               else:
                 d = {'LINHA':[line_number],'URL':[verified_url],'CÓDIGO':[REQUEST_URL_CODE], 'STATUS':[simple_result]}
+                if simple_result == "OK":
+                    count_ok += 1
+                elif simple_result == "REDIRECT":
+                    count_redirect += 1
+                elif simple_result.startswith("ERRO"):
+                    count_error += 1
+                else:
+                    count_verify += 1
 
               # Gerando o DataFrame usando Pandas (que poderá ser exportado mais tarde)
               df = pd.DataFrame(data=d)
@@ -146,8 +156,11 @@ while True:
           WINDOW["-STATUS-"].update(f"Verificação finalizada!",text_color="green")
           WINDOW["-STATUS-"].print(f"\nTempo decorrido: {tempo_final-tempoInicio:0.2f} segundos")
 
+          # Popup com resumo dos resultados
+          pg.Popup(f"OK: {count_ok}\nERROS: {count_error}\nREDIRECTS: {count_redirect}\nINVÁLIDOS: {count_invalid}\nOUTROS CÓDIGOS: {count_verify}\n",title="Validação concluída!")
+
           # Habilitando novamente ao usuário os botões de ação
-          gui.enableActionButtons(WINDOW)
+          gui.enable_action_buttons(WINDOW)
       
 
       # Exception genérica - Marca que há um dataframe gerado como falso para não permitir export
@@ -161,22 +174,20 @@ while True:
     
     #CLIPBOARD
     elif event == "COPIAR RESULTADO":
-        clipboard.copyResultToClipboard(clipboard_str,WINDOW)
+        clipboard.copy_to_clipboard(clipboard_str,WINDOW)
         
 
     #EXPORT
     elif event == "EXPORTAR":
-        export.To_xlsx(df2,is_dataframe_ready,WINDOW)
+        export.to_xlsx(df2,is_dataframe_ready,WINDOW)
         
     
 
     #TODO: INSERIR FUNCIONALIDADE PARA CANCELAR UMA VALIDAÇÃO EM ANDAMENTO
     elif event == "CANCELAR":
-        gui.enableActionButtons(WINDOW)
+        gui.enable_action_buttons(WINDOW)
         break
 
-   # DEBUG
-   # EXE: pyinstaller main.py -F --noconsole --clean
    
    
 WINDOW.close()

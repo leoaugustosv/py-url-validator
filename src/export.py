@@ -5,9 +5,9 @@ import gui
 from tkinter import filedialog
 from datetime import datetime
 
-def To_xlsx(df2,is_dataframe_ready,WINDOW):
+def to_xlsx(df2,is_dataframe_ready,WINDOW):
     if is_dataframe_ready == True:
-        gui.disableActionButtons(WINDOW)
+        gui.disable_action_buttons(WINDOW)
         now_date = datetime.now()
         DATE_STRING_FORMAT = now_date.strftime("%d-%m-%Y--%H-%M-%S.%f")
 
@@ -16,7 +16,7 @@ def To_xlsx(df2,is_dataframe_ready,WINDOW):
         #Se o export for cancelado, não terá nome. Retorna falso antes de continuar para cancelar export
         if filename == ".xlsx":
             WINDOW["-STATUS-"].update(f"Ação de exportar cancelada!",text_color="green")
-            gui.enableActionButtons(WINDOW)
+            gui.enable_action_buttons(WINDOW)
             return False
         
         elif filename.endswith(".xlsx.xlsx"):
@@ -27,13 +27,13 @@ def To_xlsx(df2,is_dataframe_ready,WINDOW):
         print(f"SELECTED PATH: {filename}")
         df2.to_excel(filename, engine="xlsxwriter", sheet_name="ExportResults")
         WINDOW["-STATUS-"].update(f"Arquivo exportado com sucesso!\nCaminho: {filename}.",text_color="green")
-        gui.enableActionButtons(WINDOW)
+        gui.enable_action_buttons(WINDOW)
         return True
 
     elif is_dataframe_ready == False:
         pg.Popup(f"Erro: Valide pelo menos uma URL antes de exportar o resultado.\n", title="Erro")
         WINDOW["-STATUS-"].update("Aguardando usuário...",text_color="black")
-        gui.enableActionButtons(WINDOW)
+        gui.enable_action_buttons(WINDOW)
         
         return False
         

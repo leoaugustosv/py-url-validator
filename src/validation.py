@@ -11,7 +11,7 @@ def firstLine_IsEmpty(LINKS_LIST, WINDOW):
     if LINKS_LIST[0] == '' :
         pg.Popup("Erro: Verifique os espaços em branco antes de continuar.\n", title="Erro")
         WINDOW["-STATUS-"].update("Aguardando usuário...",text_color="black")
-        gui.enableActionButtons(WINDOW)
+        gui.enable_action_buttons(WINDOW)
         return True
 
 
@@ -98,7 +98,7 @@ def get_URLRequest_Code(link):
     #Retornar apenas o código (como string?! então tá...)
     return requestURLCode
 
-def get_ResultToString(code):
+def get_result_ToString(code):
     result = ""
 
     if(code.startswith("2")):
